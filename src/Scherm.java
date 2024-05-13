@@ -11,6 +11,7 @@ public class Scherm extends JFrame {
     public Scherm() throws HeadlessException {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(breedte, hoogte);
+        JDBC route = new JDBC("jdbc:mysql://localhost:3306/routebepaling", "root", "");
         Inlog inlog = new Inlog(this);
         if (inlog.isLoginSuccessful()) {
             PanelRoute p = new PanelRoute();
