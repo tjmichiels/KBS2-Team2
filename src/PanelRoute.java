@@ -25,6 +25,7 @@ public class PanelRoute extends JPanel implements ActionListener {
     public int getHoogte() {
         return hoogte;
     }
+    public boolean connectie;
 
     public PanelRoute() {
         setSize(breedte, getHoogte());

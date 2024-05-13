@@ -35,7 +35,7 @@ public class JDBC {
             System.out.println("Connected to database");
         }catch (SQLException e){
             System.out.println("Failed to connect to the database or execute the query.");
-            e.printStackTrace();
+            System.out.println("Check the database name to see if you have the correct one");
         }
 
     }
