@@ -1,13 +1,19 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Scherm extends JFrame {
+//    JDBC.executeQuery(dbconn.getConn(),"");
     private int breedte = 800;
     private int hoogte = 800;
     private String databaseurl;
     private boolean connectie;
+    private JDBC dbconn;
+    private String usrnaam;
+    private String rol;
 
     public void setDatabaseurl(String databaseurl) {
         this.databaseurl = databaseurl;
@@ -18,20 +24,54 @@ public class Scherm extends JFrame {
         setSize(breedte, hoogte);
         databaseurl = "jdbc:mysql://localhost:3306/"+databasenaam;
         try {
-            JDBC dbconn = new JDBC(databaseurl, "root", "");
+            dbconn = new JDBC(databaseurl, "root", "");
             connectie = true;
+            System.out.println("Frame connected to database");
         } catch (Exception e) {
             connectie = false;
             System.out.println("Failed to connect to the database.");
         }
-        Inlog inlog = new Inlog(this);
+        Inlog inlog = new Inlog(this, databasenaam);
         if (inlog.isLoginSuccessful()) {
-            PanelRoute p = new PanelRoute();
-            p.connectie = connectie;
-            add(p);
+            this.usrnaam = inlog.getUsername();
+            try {
+                String query = "SELECT rol FROM User WHERE naam = ?";
+                ResultSet rs = JDBC.executeSQL(dbconn.getConn(), query, usrnaam);
+                while (rs.next()) {
+                    rol = rs.getString("rol");
+                    System.out.println("Naam: "+usrnaam+", Rol: "+rol);
+                }
+                rs.close();
+            } catch (SQLException e){
+                throw new RuntimeException(e);
+            }
+            if(rol.equals("manager")){
+                PanelRoute p = new PanelRoute(databasenaam, true);
+                p.connectie = connectie;
+                p.setUsername(inlog.getUsername());
+                add(p);
+            } else if (rol.equals("bezorger")) {
+                PanelRoute p = new PanelRoute(databasenaam);
+                p.connectie = connectie;
+                p.setUsername(inlog.getUsername());
+                add(p);
+            }
             setVisible(true);
         } else {
+            dbconn.closeConnection();
             System.exit(0);
         }
+
+        setTitle("Hallo "+usrnaam);
+        Tables table = new Tables(databasenaam);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                dbconn.closeConnection();
+                System.out.println("Database connection closed");
+                System.exit(0);
+            }
+        });
     }
 }
