@@ -190,11 +190,11 @@ public class Popup extends JDialog implements ActionListener {
                 System.out.println(rol);
                 if(!naam.isEmpty() && !ww.isEmpty()){
                     if(rol.equals("bezorger")||rol.equals("manager")){
-                        String query = "INSERT INTO User (naam, wachtwoord, rol) VALUES (?, ?, ?);";
-                        String query2 = "SELECT * FROM User WHERE naam = ? AND rol = ?;";
+                        String insert = "INSERT INTO User (naam, wachtwoord, rol) VALUES (?, ?, ?)";
+                        String select= "SELECT * FROM User WHERE naam = ? AND rol = ?";
                         try {
-                            JDBC.executeSQL(dbconn.getConn(), query, naam, ww, rol);
-                            ResultSet rs = JDBC.executeSQL(dbconn.getConn(), query2, naam, rol);
+                            JDBC.executeSQL(dbconn.getConn(), insert, naam, ww, rol);
+                            ResultSet rs = JDBC.executeSQL(dbconn.getConn(), select, naam, rol);
                             while (rs.next()) {
                                 naam = rs.getString("naam");
                                 rol = rs.getString("rol");
