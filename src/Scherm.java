@@ -31,6 +31,7 @@ public class Scherm extends JFrame {
             connectie = false;
             System.out.println("Failed to connect to the database.");
         }
+        Tables table = new Tables(databasenaam);
         Inlog inlog = new Inlog(this, databasenaam);
         if (inlog.isLoginSuccessful()) {
             this.usrnaam = inlog.getUsername();
@@ -63,7 +64,6 @@ public class Scherm extends JFrame {
         }
 
         setTitle("Hallo "+usrnaam);
-        Tables table = new Tables(databasenaam);
 
         addWindowListener(new WindowAdapter() {
             @Override

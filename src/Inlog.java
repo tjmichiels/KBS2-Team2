@@ -18,9 +18,11 @@ private JButton cancel = new JButton("CANCEL");
 private JDBC dbconn;
 public boolean connectie;
 private String username = "";
+private String databasenaam;
 private boolean loginSuccessful = false;
     public Inlog(JFrame parent, String databasenaam) {
         super(parent, "Inloggen", true);
+        this.databasenaam = databasenaam;
         String databaseurl = "jdbc:mysql://localhost:3306/"+databasenaam;
         try {
             dbconn = new JDBC(databaseurl, "root", "");
@@ -50,6 +52,28 @@ private boolean loginSuccessful = false;
             }
         });
     }
+    public void logIn(String username){
+        String insert = "UPDATE user\n" +
+                "SET ingelogd = 'Yes'\n" +
+                "WHERE naam = ?;";
+        try {
+            JDBC.executeSQL(dbconn.getConn(), insert, username);
+        } catch (SQLException e) {
+            dbconn.closeConnection();
+            throw new RuntimeException(e);
+        }
+    }
+    public void logOut(String username){
+        String insert = "UPDATE user\n" +
+                "SET ingelogd = 'No'\n" +
+                "WHERE naam = ?;";
+        try {
+            JDBC.executeSQL(dbconn.getConn(), insert, username);
+        } catch (SQLException e) {
+            dbconn.closeConnection();
+            throw new RuntimeException(e);
+        }
+    }
     public boolean isLoginSuccessful() {
         return loginSuccessful;
     }
@@ -65,21 +89,24 @@ private boolean loginSuccessful = false;
             String enteredPassword = jtww.getText();
             if (!enteredUsername.isEmpty() && !enteredPassword.isEmpty()) {
                 try {
-                    String query = "SELECT * FROM `routebepaling`.`User` WHERE `naam` = ? AND `wachtwoord` = ?";
+                    String query = "SELECT * FROM `"+databasenaam+"`.`User` WHERE `naam` = ? AND `wachtwoord` = ?";
                     ResultSet rs = JDBC.executeSQL(dbconn.getConn(), query, enteredUsername, enteredPassword);
                     if (rs != null && rs.next()) {
                         loginSuccessful = true;
                         username = rs.getString("naam");
                         System.out.println("Welkom: "+username);
+                        logIn(username);
                         dbconn.closeConnection();
                         System.out.println("Login closed connection");
                         dispose();
                     } else {
                         JOptionPane.showMessageDialog(this, "Incorrect username or password.", "Error", JOptionPane.ERROR_MESSAGE);
+                        dbconn.closeConnection();
                     }
                     if (rs != null) rs.close();
                 } catch (SQLException ex) {
                     ex.printStackTrace();
+                    dbconn.closeConnection();
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Please enter both username and password.", "Error", JOptionPane.ERROR_MESSAGE);
