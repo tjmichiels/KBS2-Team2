@@ -14,6 +14,9 @@ public class Tables {
         createOrder();
         createOrderitem();
         createOpmerking();
+        createRoute();
+        createBezorger();
+
     }
 
     public void createOpmerking(){
@@ -66,19 +69,71 @@ public class Tables {
             throw new RuntimeException(e);
         }
     }
+    public void createRoute(){
+        try {
+            dbconn = new JDBC(databaseurl, "root", "");
+        } catch (Exception e) {
+            System.out.println("Failed to connect to the database.");
+        }
+        try {
+            JDBC.executeSQL(dbconn.getConn(), "CREATE TABLE IF NOT EXISTS `"+dbnaam+"`.`route` (\n" +
+                    "            `id` INT NOT NULL AUTO_INCREMENT,\n" +
+                    "  `puntA` POINT NULL,\n" +
+                    "  `puntB` POINT NULL,\n" +
+                    "  `puntC` POINT NULL,\n" +
+                    "  `puntD` POINT NULL,\n" +
+                    "  `puntE` VARCHAR(45) NULL,\n" +
+                    "    PRIMARY KEY (`id`),\n" +
+                    "    UNIQUE INDEX `puntA_UNIQUE` (`puntA` ASC),\n" +
+                    "    UNIQUE INDEX `puntB_UNIQUE` (`puntB` ASC),\n" +
+                    "    UNIQUE INDEX `puntC_UNIQUE` (`puntC` ASC),\n" +
+                    "    UNIQUE INDEX `puntD_UNIQUE` (`puntD` ASC),\n" +
+                    "    UNIQUE INDEX `puntE_UNIQUE` (`puntE` ASC));");
+            System.out.println("Route tabel gemaakt");
+            dbconn.closeConnection();
+        } catch (SQLException e) {
+            System.out.println("Tabel route kon niet gemaakt worden");
+            dbconn.closeConnection();
+            throw new RuntimeException(e);
+        }
+    }
+    public void createBezorger(){
+        try {
+            dbconn = new JDBC(databaseurl, "root", "");
+        } catch (Exception e) {
+            System.out.println("Failed to connect to the database.");
+        }
+        try {
+            JDBC.executeSQL(dbconn.getConn(), "CREATE TABLE IF NOT EXISTS `bezorger` (\n" +
+                    "  `id` INT NOT NULL AUTO_INCREMENT,\n" +
+                    "  `naam` VARCHAR(45) NOT NULL,\n" +
+                    "  `route_id` INT,\n" +
+                    "  PRIMARY KEY (`id`),\n" +
+                    "  CONSTRAINT `route_fk` FOREIGN KEY (`route_id`) REFERENCES `route`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION\n" +
+                    ");");
+            System.out.println("Bezorger tabel gemaakt");
+            dbconn.closeConnection();
+        } catch (SQLException e) {
+            System.out.println("Tabel bezorger kon niet gemaakt worden");
+            dbconn.closeConnection();
+            throw new RuntimeException(e);
+        }
+    }
+
     public void createUser(){
         try {
             dbconn = new JDBC(databaseurl, "root", "");
             try{
-                JDBC.executeSQL(dbconn.getConn(), "CREATE TABLE IF NOT EXISTS `user` (\n" +
-                        "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
-                        "  `naam` varchar(45) NOT NULL,\n" +
-                        "  `wachtwoord` varchar(45) NOT NULL,\n" +
-                        "  `rol` varchar(45) DEFAULT NULL,\n" +
-                        "  `ingelogd` varchar(45) DEFAULT NULL,\n" +
-                        "  PRIMARY KEY (`id`),\n" +
-                        "  UNIQUE KEY `ID_UNIQUE` (`id`)\n" +
-                        ");");
+                JDBC.executeSQL(dbconn.getConn(), """
+                        CREATE TABLE IF NOT EXISTS `user` (
+                          `id` int(11) NOT NULL AUTO_INCREMENT,
+                          `naam` varchar(45) NOT NULL,
+                          `wachtwoord` varchar(45) NOT NULL,
+                          `rol` varchar(45) DEFAULT NULL,
+                          `ingelogd` varchar(45) DEFAULT NULL,
+                          PRIMARY KEY (`id`),
+                          UNIQUE KEY `ID_UNIQUE` (`id`)
+                        );""");
                 System.out.println("User tabel gemaakt");
                 dbconn.closeConnection();
             }catch (SQLException e){

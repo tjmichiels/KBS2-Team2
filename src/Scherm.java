@@ -12,13 +12,24 @@ public class Scherm extends JFrame {
     private String databaseurl;
     private boolean connectie;
     private JDBC dbconn;
-    private String usrnaam;
+    private String usernaam;
     private String rol;
+
 
     public void setDatabaseurl(String databaseurl) {
         this.databaseurl = databaseurl;
     }
-
+    public void logOut(String username){
+        String insert = "UPDATE user\n" +
+                "SET ingelogd = 'No'\n" +
+                "WHERE naam = ?;";
+        try {
+            JDBC.executeSQL(dbconn.getConn(), insert, username);
+        } catch (SQLException e) {
+            dbconn.closeConnection();
+            throw new RuntimeException(e);
+        }
+    }
     public Scherm(String databasenaam) throws HeadlessException {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(breedte, hoogte);
@@ -34,24 +45,26 @@ public class Scherm extends JFrame {
         Tables table = new Tables(databasenaam);
         Inlog inlog = new Inlog(this, databasenaam);
         if (inlog.isLoginSuccessful()) {
-            this.usrnaam = inlog.getUsername();
+            this.usernaam = inlog.getUsername();
             try {
                 String query = "SELECT rol FROM User WHERE naam = ?";
-                ResultSet rs = JDBC.executeSQL(dbconn.getConn(), query, usrnaam);
+                ResultSet rs = JDBC.executeSQL(dbconn.getConn(), query, usernaam);
                 while (rs.next()) {
                     rol = rs.getString("rol");
-                    System.out.println("Naam: "+usrnaam+", Rol: "+rol);
+                    System.out.println("Naam: "+ usernaam +", Rol: "+rol);
+
                 }
                 rs.close();
             } catch (SQLException e){
                 throw new RuntimeException(e);
             }
-            if(rol.equals("manager")){
+            String roll = rol.toLowerCase();
+            if(roll.equals("manager")){
                 PanelRoute p = new PanelRoute(databasenaam, true);
                 p.connectie = connectie;
                 p.setUsername(inlog.getUsername());
                 add(p);
-            } else if (rol.equals("bezorger")) {
+            } else if (roll.equals("bezorger")) {
                 PanelRoute p = new PanelRoute(databasenaam);
                 p.connectie = connectie;
                 p.setUsername(inlog.getUsername());
@@ -59,15 +72,17 @@ public class Scherm extends JFrame {
             }
             setVisible(true);
         } else {
-            dbconn.closeConnection();
             System.exit(0);
+            dbconn.closeConnection();
+            logOut(usernaam);
         }
 
-        setTitle("Hallo "+usrnaam);
+        setTitle("Hallo "+ usernaam);
 
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                logOut(usernaam);
                 dbconn.closeConnection();
                 System.out.println("Database connection closed");
                 System.exit(0);

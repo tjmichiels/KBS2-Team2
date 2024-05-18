@@ -96,9 +96,9 @@ private boolean loginSuccessful = false;
                         username = rs.getString("naam");
                         System.out.println("Welkom: "+username);
                         logIn(username);
+                        dispose();
                         dbconn.closeConnection();
                         System.out.println("Login closed connection");
-                        dispose();
                     } else {
                         JOptionPane.showMessageDialog(this, "Incorrect username or password.", "Error", JOptionPane.ERROR_MESSAGE);
                         dbconn.closeConnection();

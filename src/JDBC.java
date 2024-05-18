@@ -50,6 +50,11 @@ public class JDBC {
             e.printStackTrace();
         }
     }
+    public static ResultSet checkBezorgers(Connection conn) throws SQLException {
+        String query = "SELECT naam FROM user WHERE rol = 'bezorger' AND ingelogd = 'Yes'";
+        PreparedStatement stmt = conn.prepareStatement(query);
+        return stmt.executeQuery();
+    }
     public static ResultSet executeSQL(Connection conn, String query, String... params) throws SQLException {
         PreparedStatement pstmt = conn.prepareStatement(query);
         for (int i = 0; i < params.length; i++) {

@@ -96,6 +96,18 @@ public class Popup extends JDialog implements ActionListener {
             add(cancel);
             add(confirm);
         }
+        if(knop==5){
+            setLayout(new GridLayout(4, 2));
+            setTitle("Route toewijzen");
+            add(new JLabel("Aan welke bezorger wil je de route toewijzen"));
+            add(jtfield);
+            add(new JLabel("Welke route wil je toewijzen"));
+            add(jtinput);
+            add(error);
+            add(filler);
+            add(cancel);
+            add(confirm);
+        }
         cancel.addActionListener(this);
         confirm.addActionListener(this);
         addWindowListener(new WindowAdapter() {
