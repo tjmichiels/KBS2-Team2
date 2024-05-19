@@ -55,6 +55,14 @@ public class JDBC {
         PreparedStatement stmt = conn.prepareStatement(query);
         return stmt.executeQuery();
     }
+    public void voegBezorgerToe() throws SQLException {
+        JDBC.executeSQL(getConn(), "INSERT INTO `bezorger` (`naam`, `route_id`)\n" +
+                "SELECT DISTINCT u.naam, NULL\n" +
+                "FROM `user` u\n" +
+                "LEFT JOIN `bezorger` b ON u.naam = b.naam\n" +
+                "WHERE u.rol = 'bezorger' AND b.naam IS NULL;");
+        closeConnection();
+    }
     public static ResultSet executeSQL(Connection conn, String query, String... params) throws SQLException {
         PreparedStatement pstmt = conn.prepareStatement(query);
         for (int i = 0; i < params.length; i++) {

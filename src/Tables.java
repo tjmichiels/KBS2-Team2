@@ -3,7 +3,6 @@ import java.sql.SQLException;
 public class Tables {
     private JDBC dbconn;
     private String dbnaam;
-
     private String databaseurl;
 
     public Tables(String dbnaam) {
@@ -16,10 +15,9 @@ public class Tables {
         createOpmerking();
         createRoute();
         createBezorger();
-
     }
 
-    public void createOpmerking(){
+    public void createOpmerking() {
         try {
             dbconn = new JDBC(databaseurl, "root", "");
         } catch (Exception e) {
@@ -39,14 +37,18 @@ public class Tables {
                     "    ON DELETE NO ACTION\n" +
                     "    ON UPDATE NO ACTION);");
             System.out.println("Opmerking tabel gemaakt");
-            dbconn.closeConnection();
+            JDBC.executeSQL(dbconn.getConn(), "ALTER TABLE `"+dbnaam+"`.`opmerkingen`\n" +
+                    "ADD COLUMN IF NOT EXISTS `bezorger` VARCHAR(45) NULL,\n" +
+                    "ADD COLUMN IF NOT EXISTS `opmerking` VARCHAR(45) NULL;");
         } catch (SQLException e) {
-            System.out.println("Tabel opmerkingen kon niet gemaakt worden");
-            dbconn.closeConnection();
+            System.out.println("Tabel opmerkingen kon niet gemaakt of gealtereerd worden: " + e.getMessage());
             throw new RuntimeException(e);
+        } finally {
+            dbconn.closeConnection();
         }
     }
-    public void createOrder(){
+
+    public void createOrder() {
         try {
             dbconn = new JDBC(databaseurl, "root", "");
         } catch (Exception e) {
@@ -62,14 +64,19 @@ public class Tables {
                     "  UNIQUE INDEX `order_id_UNIQUE` (`order_id` ASC)\n" +
                     ");");
             System.out.println("Order tabel gemaakt");
-            dbconn.closeConnection();
+            JDBC.executeSQL(dbconn.getConn(), "ALTER TABLE `"+dbnaam+"`.`order`\n" +
+                    "ADD COLUMN IF NOT EXISTS `date_received` DATETIME NULL,\n" +
+                    "ADD COLUMN IF NOT EXISTS `date_delivered` DATETIME NULL,\n" +
+                    "ADD COLUMN IF NOT EXISTS `delivered` VARCHAR(45) NOT NULL DEFAULT 'No';");
         } catch (SQLException e) {
-            System.out.println("Tabel order kon niet gemaakt worden");
-            dbconn.closeConnection();
+            System.out.println("Tabel order kon niet gemaakt of gealtereerd worden: " + e.getMessage());
             throw new RuntimeException(e);
+        } finally {
+            dbconn.closeConnection();
         }
     }
-    public void createRoute(){
+
+    public void createRoute() {
         try {
             dbconn = new JDBC(databaseurl, "root", "");
         } catch (Exception e) {
@@ -77,27 +84,35 @@ public class Tables {
         }
         try {
             JDBC.executeSQL(dbconn.getConn(), "CREATE TABLE IF NOT EXISTS `"+dbnaam+"`.`route` (\n" +
-                    "            `id` INT NOT NULL AUTO_INCREMENT,\n" +
+                    "  `id` INT NOT NULL AUTO_INCREMENT,\n" +
                     "  `puntA` POINT NULL,\n" +
                     "  `puntB` POINT NULL,\n" +
                     "  `puntC` POINT NULL,\n" +
                     "  `puntD` POINT NULL,\n" +
-                    "  `puntE` VARCHAR(45) NULL,\n" +
-                    "    PRIMARY KEY (`id`),\n" +
-                    "    UNIQUE INDEX `puntA_UNIQUE` (`puntA` ASC),\n" +
-                    "    UNIQUE INDEX `puntB_UNIQUE` (`puntB` ASC),\n" +
-                    "    UNIQUE INDEX `puntC_UNIQUE` (`puntC` ASC),\n" +
-                    "    UNIQUE INDEX `puntD_UNIQUE` (`puntD` ASC),\n" +
-                    "    UNIQUE INDEX `puntE_UNIQUE` (`puntE` ASC));");
+                    "  `puntE` POINT NULL,\n" +
+                    "  PRIMARY KEY (`id`),\n" +
+                    "  UNIQUE INDEX `puntA_UNIQUE` (`puntA` ASC),\n" +
+                    "  UNIQUE INDEX `puntB_UNIQUE` (`puntB` ASC),\n" +
+                    "  UNIQUE INDEX `puntC_UNIQUE` (`puntC` ASC),\n" +
+                    "  UNIQUE INDEX `puntD_UNIQUE` (`puntD` ASC),\n" +
+                    "  UNIQUE INDEX `puntE_UNIQUE` (`puntE` ASC)\n" +
+                    ");");
             System.out.println("Route tabel gemaakt");
-            dbconn.closeConnection();
+            JDBC.executeSQL(dbconn.getConn(), "ALTER TABLE `"+dbnaam+"`.`route`\n" +
+                    "ADD COLUMN IF NOT EXISTS `puntA` POINT NULL,\n" +
+                    "ADD COLUMN IF NOT EXISTS `puntB` POINT NULL,\n" +
+                    "ADD COLUMN IF NOT EXISTS `puntC` POINT NULL,\n" +
+                    "ADD COLUMN IF NOT EXISTS `puntD` POINT NULL,\n" +
+                    "ADD COLUMN IF NOT EXISTS `puntE` POINT NULL;");
         } catch (SQLException e) {
-            System.out.println("Tabel route kon niet gemaakt worden");
-            dbconn.closeConnection();
+            System.out.println("Tabel route kon niet gemaakt of gealtereerd worden: " + e.getMessage());
             throw new RuntimeException(e);
+        } finally {
+            dbconn.closeConnection();
         }
     }
-    public void createBezorger(){
+
+    public void createBezorger() {
         try {
             dbconn = new JDBC(databaseurl, "root", "");
         } catch (Exception e) {
@@ -112,66 +127,81 @@ public class Tables {
                     "  CONSTRAINT `route_fk` FOREIGN KEY (`route_id`) REFERENCES `route`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION\n" +
                     ");");
             System.out.println("Bezorger tabel gemaakt");
-            dbconn.closeConnection();
+            JDBC.executeSQL(dbconn.getConn(), "ALTER TABLE `bezorger`\n" +
+                    "ADD COLUMN IF NOT EXISTS `naam` VARCHAR(45) NOT NULL,\n" +
+                    "ADD COLUMN IF NOT EXISTS `route_id` INT;");
+            dbconn.voegBezorgerToe();
         } catch (SQLException e) {
-            System.out.println("Tabel bezorger kon niet gemaakt worden");
-            dbconn.closeConnection();
+            System.out.println("Tabel bezorger kon niet gemaakt of gealtereerd worden: " + e.getMessage());
             throw new RuntimeException(e);
+        } finally {
+            dbconn.closeConnection();
         }
     }
 
-    public void createUser(){
+    public void createUser() {
         try {
             dbconn = new JDBC(databaseurl, "root", "");
-            try{
-                JDBC.executeSQL(dbconn.getConn(), """
-                        CREATE TABLE IF NOT EXISTS `user` (
-                          `id` int(11) NOT NULL AUTO_INCREMENT,
-                          `naam` varchar(45) NOT NULL,
-                          `wachtwoord` varchar(45) NOT NULL,
-                          `rol` varchar(45) DEFAULT NULL,
-                          `ingelogd` varchar(45) DEFAULT NULL,
-                          PRIMARY KEY (`id`),
-                          UNIQUE KEY `ID_UNIQUE` (`id`)
-                        );""");
-                System.out.println("User tabel gemaakt");
-                dbconn.closeConnection();
-            }catch (SQLException e){
-                System.out.println("Tabel user kon niet gemaakt worden");
-                throw new RuntimeException(e);
-            }
         } catch (Exception e) {
             System.out.println("Failed to connect to the database.");
+        }
+        try {
+            JDBC.executeSQL(dbconn.getConn(), """
+                    CREATE TABLE IF NOT EXISTS `user` (
+                      `id` int(11) NOT NULL AUTO_INCREMENT,
+                      `naam` varchar(45) NOT NULL,
+                      `wachtwoord` varchar(45) NOT NULL,
+                      `rol` varchar(45) DEFAULT NULL,
+                      `ingelogd` varchar(45) DEFAULT NULL,
+                      PRIMARY KEY (`id`),
+                      UNIQUE KEY `ID_UNIQUE` (`id`)
+                    );""");
+            System.out.println("User tabel gemaakt");
+            JDBC.executeSQL(dbconn.getConn(), "ALTER TABLE `user`\n" +
+                    "ADD COLUMN IF NOT EXISTS `naam` VARCHAR(45) NOT NULL,\n" +
+                    "ADD COLUMN IF NOT EXISTS `wachtwoord` VARCHAR(45) NOT NULL,\n" +
+                    "ADD COLUMN IF NOT EXISTS `rol` VARCHAR(45) DEFAULT NULL,\n" +
+                    "ADD COLUMN IF NOT EXISTS `ingelogd` VARCHAR(45) DEFAULT NULL;");
+        } catch (SQLException e) {
+            System.out.println("Tabel user kon niet gemaakt of gealtereerd worden: " + e.getMessage());
+            throw new RuntimeException(e);
+        } finally {
             dbconn.closeConnection();
         }
     }
-    public void createOrderitem(){
+
+    public void createOrderitem() {
         try {
             dbconn = new JDBC(databaseurl, "root", "");
-            try {
-                JDBC.executeSQL(dbconn.getConn(),"CREATE TABLE IF NOT EXISTS `"+dbnaam+"`.`order_item` (\n" +
-                        "  `item_id` INT NOT NULL AUTO_INCREMENT,\n" +
-                        "  `order_id` INT NOT NULL,\n" +
-                        "  `product_name` VARCHAR(255) NOT NULL,\n" +
-                        "  `quantity` INT NOT NULL,\n" +
-                        "  `size` INT NOT NULL,\n" +
-                        "  `price` DECIMAL(10, 2) NOT NULL,\n" +
-                        "  PRIMARY KEY (`item_id`),\n" +
-                        "  INDEX `fk_order_id_idx` (`order_id` ASC),\n" +
-                        "  CONSTRAINT `fk_order_id`\n" +
-                        "    FOREIGN KEY (`order_id`)\n" +
-                        "    REFERENCES `"+dbnaam+"`.`order` (`order_id`)\n" +
-                        "    ON DELETE CASCADE\n" +
-                        "    ON UPDATE NO ACTION\n" +
-                        ");");
-                System.out.println("Order_item tabel gemaakt");
-            } catch (SQLException e) {
-                System.out.println("Tabel order_item kon niet gemaakt worden");
-                throw new RuntimeException(e);
-            }
-            dbconn.closeConnection();
         } catch (Exception e) {
             System.out.println("Failed to connect to the database.");
+        }
+        try {
+            JDBC.executeSQL(dbconn.getConn(),"CREATE TABLE IF NOT EXISTS `"+dbnaam+"`.`order_item` (\n" +
+                    "  `item_id` INT NOT NULL AUTO_INCREMENT,\n" +
+                    "  `order_id` INT NOT NULL,\n" +
+                    "  `product_name` VARCHAR(255) NOT NULL,\n" +
+                    "  `quantity` INT NOT NULL,\n" +
+                    "  `size` INT NOT NULL,\n" +
+                    "  `price` DECIMAL(10, 2) NOT NULL,\n" +
+                    "  PRIMARY KEY (`item_id`),\n" +
+                    "  INDEX `fk_order_id_idx` (`order_id` ASC),\n" +
+                    "  CONSTRAINT `fk_order_id`\n" +
+                    "    FOREIGN KEY (`order_id`)\n" +
+                    "    REFERENCES `"+dbnaam+"`.`order` (`order_id`)\n" +
+                    "    ON DELETE CASCADE\n" +
+                    "    ON UPDATE NO ACTION\n" +
+                    ");");
+            System.out.println("Order_item tabel gemaakt");
+            JDBC.executeSQL(dbconn.getConn(), "ALTER TABLE `"+dbnaam+"`.`order_item`\n" +
+                    "ADD COLUMN IF NOT EXISTS `product_name` VARCHAR(255) NOT NULL,\n" +
+                    "ADD COLUMN IF NOT EXISTS `quantity` INT NOT NULL,\n" +
+                    "ADD COLUMN IF NOT EXISTS `size` INT NOT NULL,\n" +
+                    "ADD COLUMN IF NOT EXISTS `price` DECIMAL(10, 2) NOT NULL;");
+        } catch (SQLException e) {
+            System.out.println("Tabel order_item kon niet gemaakt of gealtereerd worden: " + e.getMessage());
+            throw new RuntimeException(e);
+        } finally {
             dbconn.closeConnection();
         }
     }

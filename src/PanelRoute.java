@@ -111,7 +111,7 @@ public class PanelRoute extends JPanel implements ActionListener {
         this.setBackground(Color.white);
         add(menu);
         addMenuButton("Pakketten");
-        addMenuButton("Opmerking");
+        addMenuButton("Bezorger status");
         addMenuButton("Route toewijzen");
         addMenuButton("Registreren");
         addMenuButton("Uitloggen");
@@ -222,6 +222,11 @@ public class PanelRoute extends JPanel implements ActionListener {
             }
             else if (buttonText.equals("Route toewijzen")) {
                 Popup p = new Popup(5, true, dbnaam);
+                p.setUsername(username);
+                p.setVisible(true);
+            }
+            else if (buttonText.equals("Bezorger status")) {
+                Popup p = new Popup(6, true, dbnaam);
                 p.setUsername(username);
                 p.setVisible(true);
             }

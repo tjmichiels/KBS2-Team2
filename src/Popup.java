@@ -20,6 +20,7 @@ public class Popup extends JDialog implements ActionListener {
     private int knop;
     private JDBC dbconn;
     private boolean connectie;
+    private String dbnaam;
     private String username;
 
     public String getUsername() {
@@ -33,6 +34,7 @@ public class Popup extends JDialog implements ActionListener {
     public Popup(int knop, boolean modal, String databasenaam) {
         super();
         this.knop = knop;
+        dbnaam = databasenaam;
         String databaseurl = "jdbc:mysql://localhost:3306/"+databasenaam;
         setSize(400, 600);
         if (modal) {
@@ -51,6 +53,16 @@ public class Popup extends JDialog implements ActionListener {
             setLayout(new GridLayout(3, 2));
             setTitle("Bezorging bevestigen");
             add(new JLabel("Welke order wil je bevestigen:"));
+            add(jtfield);
+            add(error);
+            add(filler);
+            add(cancel);
+            add(confirm);
+        }
+        if(knop==6){
+            setLayout(new GridLayout(3, 2));
+            setTitle("Bezorger status");
+            add(new JLabel("Welke bezorger wil je bekijken:"));
             add(jtfield);
             add(error);
             add(filler);
@@ -107,6 +119,32 @@ public class Popup extends JDialog implements ActionListener {
             add(filler);
             add(cancel);
             add(confirm);
+        }
+        cancel.addActionListener(this);
+        confirm.addActionListener(this);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                dbconn.closeConnection();
+                System.out.println("Database connection closed");
+                dispose();
+            }
+        });
+    }
+    public Popup(boolean modal, String databasenaam) {
+        super();
+        String databaseurl = "jdbc:mysql://localhost:3306/"+databasenaam;
+        setSize(400, 600);
+        if (modal) {
+            setModalityType(ModalityType.APPLICATION_MODAL);
+        }
+        try {
+            dbconn = new JDBC(databaseurl, "root", "");
+            connectie = true;
+            System.out.println("Popup connected to database");
+        } catch (Exception e) {
+            connectie = false;
+            System.out.println("Failed to connect to the panel database.");
         }
         cancel.addActionListener(this);
         confirm.addActionListener(this);
@@ -192,8 +230,8 @@ public class Popup extends JDialog implements ActionListener {
                 } else {
                     error.setText("Please enter a valid order number.");
                 }
-
-            }if(knop==4){
+            }
+            if(knop==4){
 //                Registratie
                 String naam = jtfield.getText();
                 String rol = jtinput.getText();
@@ -203,10 +241,12 @@ public class Popup extends JDialog implements ActionListener {
                 if(!naam.isEmpty() && !ww.isEmpty()){
                     if(rol.equals("bezorger")||rol.equals("manager")){
                         String insert = "INSERT INTO User (naam, wachtwoord, rol) VALUES (?, ?, ?)";
+                        String bezorg = "INSERT INTO Bezorger (naam) VALUES ()";
                         String select= "SELECT * FROM User WHERE naam = ? AND rol = ?";
                         try {
                             JDBC.executeSQL(dbconn.getConn(), insert, naam, ww, rol);
                             ResultSet rs = JDBC.executeSQL(dbconn.getConn(), select, naam, rol);
+                            dbconn.voegBezorgerToe();
                             while (rs.next()) {
                                 naam = rs.getString("naam");
                                 rol = rs.getString("rol");
@@ -223,8 +263,46 @@ public class Popup extends JDialog implements ActionListener {
                 } else {
                     error.setText("Voer een naam en wachtwoord in");
                 }
-            }if(knop==5){
-
+            }
+            if(knop==5){
+//                Toewijzen
+                String route = jtinput.getText();
+                String naam = jtfield.getText();
+                if(onlyDigits(route, route.length())){
+                    String routeCheckQuery = "SELECT COUNT(*) AS route_count FROM route WHERE id = ?";
+                    try {
+                        ResultSet resultSet = JDBC.executeSQL(dbconn.getConn(), routeCheckQuery, route);
+                        if (resultSet.next() && resultSet.getInt("route_count") > 0) {
+                            String updateQuery = "UPDATE bezorger SET route_id = ? WHERE naam = ?";
+                            JDBC.executeSQL(dbconn.getConn(), updateQuery, route, naam);
+                            dispose();
+                        } else {
+                            error.setText("Deze route bestaat niet");
+                        }
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+                else {
+                    error.setText("Voer een correct route id in.");
+                }
+            }
+            if (knop == 6) {
+                // Bekijken
+                String bezorger = jtfield.getText();
+                String query = "SELECT * FROM bezorger WHERE naam = ?";
+                try {
+                    ResultSet rs = JDBC.executeSQL(dbconn.getConn(), query, bezorger);
+                    if (rs.next() && rs.getObject("route_id") != null) {
+                        Popup p = new Popup(true, dbnaam);
+                        dispose();
+                    } else {
+                        error.setText("Bezorger bestaat niet of heeft geen route");
+                    }
+                    rs.close();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         }
         if(e.getSource()==cancel){
