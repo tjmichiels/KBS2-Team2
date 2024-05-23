@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -40,6 +41,14 @@ public class PanelRoute extends JPanel implements ActionListener {
     private String dbnaam;
     private String username;
     private String databaseurl;
+
+    private ArrayList<double[]> listOfCoordinates;
+
+    protected void setListOfCoordinates(ArrayList<double[]> listOfCoordinates) {
+        this.listOfCoordinates = listOfCoordinates;
+        repaint();
+    }
+
 
     public String getUsername() {
         return username;
@@ -193,13 +202,10 @@ public class PanelRoute extends JPanel implements ActionListener {
     }
 
     private void drawCity(Graphics g, String naam, double lat, double lon, int size) {
-        if (naam.equals("Groningen")) {
-            System.out.println(convertLonToX(lon));
-            System.out.println(convertLatToY(lat));
-        }
         g.fillOval(convertLonToX(lon), convertLatToY(lat), size, size);
         g.drawString(naam, convertLonToX(lon), convertLatToY(lat));
     }
+
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -211,11 +217,11 @@ public class PanelRoute extends JPanel implements ActionListener {
         int size = 10;
         // een paar standaard steden tekenen
         // coördinaten afkomstig van: https://latitudelongitude.org/nl/
-        drawCity(g, "Utrecht",  52.09083,5.12222, size);
-        drawCity(g, "Amsterdam",  52.37403,4.88969, size);
-        drawCity(g, "Eindhoven",  51.44083,5.47778, size);
-        drawCity(g, "Rotterdam",  51.9225, 4.47917,size);
-        drawCity(g, "Den Haag",  52.07667, 4.29861,size);
+        drawCity(g, "Utrecht", 52.09083, 5.12222, size);
+        drawCity(g, "Amsterdam", 52.37403, 4.88969, size);
+        drawCity(g, "Eindhoven", 51.44083, 5.47778, size);
+        drawCity(g, "Rotterdam", 51.9225, 4.47917, size);
+        drawCity(g, "Den Haag", 52.07667, 4.29861, size);
         drawCity(g, "Groningen", 53.21917, 6.56667, size);
         drawCity(g, "Born", 51.03167, 5.80972, size);
         drawCity(g, "Middelburg", 51.5, 3.61389, size);
@@ -243,7 +249,71 @@ public class PanelRoute extends JPanel implements ActionListener {
             }
         }
         drawBezorgers(g);
+
+        if (this.listOfCoordinates != null && !this.listOfCoordinates.isEmpty()) {
+            drawRoute(g);
+        }
     }
+
+    private void drawRoute(Graphics g) {
+        // IMPLEMENTATIE LIN KERNIGHAN
+        File folder = new File("data/");
+        File[] listOfFiles = folder.listFiles();
+        for (int i = 0; i < listOfFiles.length; i++) {
+            String name = listOfFiles[i].getName();
+            if (listOfFiles[i].isFile() && name.substring(name.length() - 3).equalsIgnoreCase("tsp")) {
+//                System.out.println("  [" + i + "] " + listOfFiles[i].getName());
+            }
+        }
+        int idx;
+        do {
+            idx = 1;
+        } while(idx >= listOfFiles.length || idx < 0);
+        // Read the file
+        Interpreter in = new Interpreter(listOfFiles[idx]);
+        // Create the instance of the problem
+        LinKernighan lk = new LinKernighan(in.getCoordinates(), in.getIds());
+        // Time keeping
+//        long start;
+//        start = System.currentTimeMillis();
+//        // Shpw the results even if shutdown
+//        Runtime.getRuntime().addShutdownHook(new Thread() {
+//            public void run() {
+//                System.out.printf("The solution took: %dms\n", System.currentTimeMillis()-start);
+//                System.out.println("The solution is: ");
+                System.out.println(lk);
+//            }
+//        });
+        lk.runAlgorithm();
+        int[] tour = lk.tour;
+        for (int i = 0; i < tour.length; i++) {
+
+            int size = 4;
+            g.setColor(Color.red);
+            g.setFont(new Font("default", Font.BOLD, 14));
+
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setStroke(new BasicStroke(2));
+
+            int x = convertLonToX(this.listOfCoordinates.get(tour[i])[0]);
+            int y = convertLatToY(this.listOfCoordinates.get(tour[i])[1]);
+//            System.out.println("X: " + x + ", Y: " + y);
+
+            g.setColor(Color.black);
+            g.fillOval(x, y, size, size); // Cirkel
+            g.setColor(Color.red);
+            g.drawString(String.valueOf(i + 1), x, y); // Tekst
+
+            if (i > 0) {
+                int previousX = convertLonToX(this.listOfCoordinates.get(tour[i-1])[0]);
+                int previousY = convertLatToY(this.listOfCoordinates.get(tour[i-1])[1]);
+                g.drawLine(x, y, previousX, previousY);
+            }
+
+        }
+
+    }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {

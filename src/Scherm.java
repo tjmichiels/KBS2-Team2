@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 
 public class Scherm extends JFrame {
 //    JDBC.executeQuery(dbconn.getConn(),"");
@@ -14,6 +15,13 @@ public class Scherm extends JFrame {
     private JDBC dbconn;
     private String usernaam;
     private String rol;
+
+    private PanelRoute p;
+
+    public void setListOfCoordinates(ArrayList<double[]> list) {
+        this.p.setListOfCoordinates(list);
+        repaint();
+    }
 
 
     public void setDatabaseurl(String databaseurl) {
@@ -60,12 +68,12 @@ public class Scherm extends JFrame {
             }
             String roll = rol.toLowerCase();
             if(roll.equals("manager")){
-                PanelRoute p = new PanelRoute(databasenaam, true);
+                p = new PanelRoute(databasenaam, true);
                 p.connectie = connectie;
                 p.setUsername(inlog.getUsername());
                 add(p);
             } else if (roll.equals("bezorger")) {
-                PanelRoute p = new PanelRoute(databasenaam);
+                p = new PanelRoute(databasenaam);
                 p.connectie = connectie;
                 p.setUsername(inlog.getUsername());
                 add(p);

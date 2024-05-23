@@ -7,6 +7,20 @@ import java.util.ArrayList;
 
 public class CreateFile {
 
+    public static ArrayList<double[]> getListOfCoordinates(ArrayList<Object[]> postcodesEnHuisnummers) {
+        ArrayList<double[]> listOfCoordinates = new ArrayList<>();
+        for (int i = 0; i < postcodesEnHuisnummers.size(); i++) {
+            String postcode = (String) postcodesEnHuisnummers.get(i)[0];
+            int huisnummer = (int) postcodesEnHuisnummers.get(i)[1];
+            JSONArray coordinates = PostcodeAPI.findCoordinates(postcode, huisnummer);
+            double longitude = coordinates.getDouble(0);
+            double latitude = coordinates.getDouble(1);
+            listOfCoordinates.add(new double[]{longitude, latitude});
+
+        }
+        return listOfCoordinates;
+    }
+
     public static void createTSPFile(String name, ArrayList<Object[]> postcodesEnHuisnummers) {
         ArrayList<double[]> listOfCoordinates = new ArrayList<>();
 

@@ -28,6 +28,8 @@ public class Main {
 
 
 
+
+
         // IMPLEMENTATIE LIN KERNIGHAN
 //        File folder = new File("data/");
 //        File[] listOfFiles = folder.listFiles();
@@ -67,5 +69,6 @@ public class Main {
 
         // TEKENEN SCHERM
         Scherm s = new Scherm("routebepaling");
+        s.setListOfCoordinates(CreateFile.getListOfCoordinates(postcodesEnHuisnummers));
     }
 }
