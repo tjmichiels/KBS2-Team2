@@ -2,6 +2,7 @@ import org.json.JSONArray;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
@@ -60,8 +61,12 @@ public class Main {
         lk.runAlgorithm();
 
 
+//        System.out.println(lk.getDistance()); // totale afstand
+//        System.out.println(Arrays.toString(lk.tour)); // de int[] met de volgorde van de adressen
+
+
 
         // TEKENEN SCHERM
-//        Scherm s = new Scherm("routebepaling");
+        Scherm s = new Scherm("routebepaling");
     }
 }

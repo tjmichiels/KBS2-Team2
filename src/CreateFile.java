@@ -35,6 +35,9 @@ public class CreateFile {
         String filePath = "data/" + name + ".tsp";
         try {
             File myObj = new File(filePath);
+            if (myObj.delete()) {
+                System.out.println("File already exists. Deleting old file.");
+            }
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
                 String fileInformation = "";
