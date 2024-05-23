@@ -52,7 +52,7 @@ public class CoordinateFinder {
                         JSONArray coordinates = location.getJSONArray("coordinates");
                         double longitude = coordinates.getDouble(0);
                         double latitude = coordinates.getDouble(1);
-                        System.out.println("Coordinates: Longitude = " + longitude + ", Latitude = " + latitude);
+                        //System.out.println("Coordinates: Longitude = " + longitude + ", Latitude = " + latitude);
                         return coordinates;
                     } else {
                         System.out.println("Coordinates not found in the response.");
