@@ -62,7 +62,7 @@ public class CoordinateFinder {
                 }
 
                 // Print the response
-                System.out.println("Response: " + response.toString());
+                System.out.println("Response: " + response);
             } else {
                 System.out.println("GET request failed.");
             }
