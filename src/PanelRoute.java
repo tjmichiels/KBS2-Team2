@@ -177,13 +177,13 @@ public class PanelRoute extends JPanel implements ActionListener {
 
     private int convertLonToX(double lon) {
         lon -= 3.5;
-        lon *= (800 / 2.7);
+        lon *= (800 / 3.7);
         return (int) lon;
     }
 
     private int convertLatToY(double lat) {
         lat -= 50.7;
-        lat *= (1000 / 3.7);
+        lat *= (1000 / 2.7);
         if (lat > 292) {
             lat = 0 + (1000 - lat);
         } else if (lat < 292) {
@@ -192,9 +192,13 @@ public class PanelRoute extends JPanel implements ActionListener {
         return (int) lat;
     }
 
-    private void drawCity(Graphics g, String naam, double lon, double lat, int size) {
-        g.fillOval(convertLonToX(lat), convertLatToY(lon), size, size);
-        g.drawString(naam, convertLonToX(lat), convertLatToY(lon));
+    private void drawCity(Graphics g, String naam, double lat, double lon, int size) {
+        if (naam.equals("Groningen")) {
+            System.out.println(convertLonToX(lon));
+            System.out.println(convertLatToY(lat));
+        }
+        g.fillOval(convertLonToX(lon), convertLatToY(lat), size, size);
+        g.drawString(naam, convertLonToX(lon), convertLatToY(lat));
     }
 
     @Override
@@ -215,6 +219,9 @@ public class PanelRoute extends JPanel implements ActionListener {
         drawCity(g, "Groningen", 53.21917, 6.56667, size);
         drawCity(g, "Born", 51.03167, 5.80972, size);
         drawCity(g, "Middelburg", 51.5, 3.61389, size);
+        drawCity(g, "Alkmaar", 52.63167, 4.74861, size);
+        drawCity(g, "Zwolle", 52.5125, 6.09444, size);
+        drawCity(g, "Almere", 52.37025, 5.21413, size);
 
         g.setColor(Color.black);
 
