@@ -53,7 +53,6 @@ public class PostcodeAPI {
                         double longitude = coordinates.getDouble(0);
                         double latitude = coordinates.getDouble(1);
                         //System.out.println("Coordinates: Longitude = " + longitude + ", Latitude = " + latitude);
-                        System.out.println("Response: " + response);
                         return coordinates;
                     } else {
                         System.out.println("Coordinates not found in the response.");
@@ -114,7 +113,7 @@ public class PostcodeAPI {
                 list.add(jsonResponse.getString("province"));
 
                 // Print the response
-                System.out.println("Response: " + response);
+                //System.out.println("Response: " + response);
             } else {
                 System.out.println("GET request failed.");
             }
