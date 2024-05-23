@@ -1,14 +1,26 @@
 import org.json.JSONArray;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         // IMPLEMENTATIE POSTCODE API
-//        JSONArray coordinates = CoordinateFinder.findCoordinates("3608TH", 72);
-//        double longitude = coordinates.getDouble(0);
-//        double latitude = coordinates.getDouble(1);
+        JSONArray coordinates = PostcodeAPI.findCoordinates("3608TH", 72);
+        double longitude = coordinates.getDouble(0);
+        double latitude = coordinates.getDouble(1);
+        ArrayList<String> addressInfo = PostcodeAPI.getAddressInfo("3608TH", 72);
+        System.out.println(addressInfo);
+
+        ArrayList<int[]> coordinatesList = new ArrayList<>();
+
+        // Step 3: Add coordinate arrays to the ArrayList
+        coordinatesList.add(new int[]{1, 2});
+        coordinatesList.add(new int[]{3, 4});
+        coordinatesList.add(new int[]{5, 6});
+
+        CreateFile.createTSPFile("route", coordinatesList);
 
 
         // IMPLEMENTATIE LIN KERNIGHAN
@@ -47,6 +59,6 @@ public class Main {
 
 
         // TEKENEN SCHERM
-        Scherm s = new Scherm("routebepaling");
+//        Scherm s = new Scherm("routebepaling");
     }
 }

@@ -5,14 +5,14 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
-public class CoordinateFinder {
+public class PostcodeAPI {
     // We maken gebruik van Postcode API
     private static final String API_URL = "https://api.postcodeapi.nu/v3/lookup/";
     private static final String API_KEY = "qVP6XG4nd16lDfdUNQA3zaaktUZ1o7AlKxrz3Kv6";
 
     public static JSONArray findCoordinates(String postcode, int number) {
-
         try {
             // Construct the full URL
             URL url = new URL(API_URL + postcode + "/" + number);
@@ -53,6 +53,7 @@ public class CoordinateFinder {
                         double longitude = coordinates.getDouble(0);
                         double latitude = coordinates.getDouble(1);
                         //System.out.println("Coordinates: Longitude = " + longitude + ", Latitude = " + latitude);
+                        System.out.println("Response: " + response);
                         return coordinates;
                     } else {
                         System.out.println("Coordinates not found in the response.");
@@ -70,6 +71,56 @@ public class CoordinateFinder {
             e.printStackTrace();
         }
         return null;
+    }
 
+    public static ArrayList<String> getAddressInfo(String postcode, int number) {
+        ArrayList<String> list = new ArrayList<>();
+        try {
+            // Construct the full URL
+            URL url = new URL(API_URL + postcode + "/" + number);
+
+            // Open a connection to the URL
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            // Set the request method to GET
+            connection.setRequestMethod("GET");
+
+            // Set the request header with the API key
+            connection.setRequestProperty("X-Api-Key", API_KEY);
+
+            // Get the response code
+            int responseCode = connection.getResponseCode();
+            System.out.println("Response Code: " + responseCode);
+
+            // If the response code is 200 (HTTP.OK), read the response
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+
+                // Read the response line by line
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                // Parse the JSON response
+                JSONObject jsonResponse = new JSONObject(response.toString());
+
+                list.add(jsonResponse.getString("postcode"));
+                list.add(String.valueOf(jsonResponse.getInt("number")));
+                list.add(jsonResponse.getString("street"));
+                list.add(jsonResponse.getString("city"));
+                list.add(jsonResponse.getString("province"));
+
+                // Print the response
+                System.out.println("Response: " + response);
+            } else {
+                System.out.println("GET request failed.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }
