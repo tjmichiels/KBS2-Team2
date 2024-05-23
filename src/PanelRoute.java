@@ -14,7 +14,7 @@ import static com.sun.java.accessibility.util.AWTEventMonitor.addWindowListener;
 public class PanelRoute extends JPanel implements ActionListener {
     private JLabel aap = new JLabel("Aap");
     private int breedte = 800;
-    private int hoogte = 800;
+    private int hoogte = 1000;
 
     private int cirkelWH = breedte / 12;
     private int menulineY = (int) (getHoogte() * 0.1);
@@ -34,6 +34,7 @@ public class PanelRoute extends JPanel implements ActionListener {
     public int getHoogte() {
         return hoogte;
     }
+
     public boolean connectie;
     private JDBC dbconn;
     private String dbnaam;
@@ -47,7 +48,8 @@ public class PanelRoute extends JPanel implements ActionListener {
     public void setUsername(String username) {
         this.username = username;
     }
-    public void logOut(String username){
+
+    public void logOut(String username) {
         String insert = "UPDATE user\n" +
                 "SET ingelogd = 'No'\n" +
                 "WHERE naam = ?;";
@@ -58,8 +60,9 @@ public class PanelRoute extends JPanel implements ActionListener {
             throw new RuntimeException(e);
         }
     }
+
     public PanelRoute(String databasenaam) {
-        databaseurl = "jdbc:mysql://localhost:3306/"+databasenaam;
+        databaseurl = "jdbc:mysql://localhost:3306/" + databasenaam;
         dbnaam = databasenaam;
         try {
             dbconn = new JDBC(databaseurl, "root", "");
@@ -74,11 +77,11 @@ public class PanelRoute extends JPanel implements ActionListener {
         menu = new JButton("Menu");
         this.setBackground(Color.white);
         add(menu);
-        menu.setBounds(getBreedte()/80, menulineY - 40, 100, 30);
+        menu.setBounds(getBreedte() / 80, menulineY - 40, 100, 30);
         routeOpvragen = new JButton("Route opvragen");
         routeOpvragen.addActionListener(this);
         add(routeOpvragen);
-        routeOpvragen.setBounds((getBreedte()/2)-(getBreedte()/8), menulineY2 + 10, getBreedte()/4, getHoogte()/20);
+        routeOpvragen.setBounds((getBreedte() / 2) - (getBreedte() / 8), menulineY2 + 10, getBreedte() / 4, getHoogte() / 20);
         addMenuButton("Pakketten");
         addMenuButton("Opmerking");
         addMenuButton("Bevestigen");
@@ -95,13 +98,14 @@ public class PanelRoute extends JPanel implements ActionListener {
             }
         });
     }
+
     public PanelRoute(String databasenaam, boolean manager) {
-        String databaseurl = "jdbc:mysql://localhost:3306/"+databasenaam;
+        String databaseurl = "jdbc:mysql://localhost:3306/" + databasenaam;
         dbnaam = databasenaam;
         try {
             dbconn = new JDBC(databaseurl, "root", "");
             connectie = true;
-            System.out.println("Panel connected to database");
+            System.out.println("Panel (manager) connected to database");
         } catch (Exception e) {
             connectie = false;
             System.out.println("Failed to connect to the panel database.");
@@ -132,6 +136,7 @@ public class PanelRoute extends JPanel implements ActionListener {
             }
         });
     }
+
     private void printLoggedBezorgers() {
         try {
             ResultSet rs = JDBC.checkBezorgers(dbconn.getConn());
@@ -143,11 +148,13 @@ public class PanelRoute extends JPanel implements ActionListener {
             e.printStackTrace();
         }
     }
+
     public void addMenuButton(String label) {
         JButton button = new JButton(label);
         button.addActionListener(this);
         menuButtons.add(button);
     }
+
     private void drawBezorgers(Graphics g) {
         int vierkantBreedte = getBreedte() / 8;
         int vierkantHoogte = getHoogte() / 8;
@@ -167,10 +174,51 @@ public class PanelRoute extends JPanel implements ActionListener {
             }
         }
     }
+
+    private int convertLonToX(double lon) {
+        lon -= 3.5;
+        lon *= (800 / 2.7);
+        return (int) lon;
+    }
+
+    private int convertLatToY(double lat) {
+        lat -= 50.7;
+        lat *= (1000 / 3.7);
+        if (lat > 292) {
+            lat = 0 + (1000 - lat);
+        } else if (lat < 292) {
+            lat = 1000 - (lat);
+        }
+        return (int) lat;
+    }
+
+    private void drawCity(Graphics g, String naam, double lon, double lat, int size) {
+        g.fillOval(convertLonToX(lat), convertLatToY(lon), size, size);
+        g.drawString(naam, convertLonToX(lat), convertLatToY(lon));
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawOval((int) (getBreedte() * 0.9), (int) ((getHoogte() * 0.02)-4), cirkelWH, cirkelWH);
+
+
+        g.setColor(Color.blue);
+        g.setFont(new Font("default", Font.BOLD, 12));
+        int size = 10;
+        // een paar standaard steden tekenen
+        // coördinaten afkomstig van: https://latitudelongitude.org/nl/
+        drawCity(g, "Utrecht",  52.09083,5.12222, size);
+        drawCity(g, "Amsterdam",  52.37403,4.88969, size);
+        drawCity(g, "Eindhoven",  51.44083,5.47778, size);
+        drawCity(g, "Rotterdam",  51.9225, 4.47917,size);
+        drawCity(g, "Den Haag",  52.07667, 4.29861,size);
+        drawCity(g, "Groningen", 53.21917, 6.56667, size);
+        drawCity(g, "Born", 51.03167, 5.80972, size);
+        drawCity(g, "Middelburg", 51.5, 3.61389, size);
+
+        g.setColor(Color.black);
+
+        g.drawOval((int) (getBreedte() * 0.9), (int) ((getHoogte() * 0.02) - 4), cirkelWH, cirkelWH);
         g.fillRect(0, menulineY, getBreedte(), hoogte / 300);
         g.fillRect(0, menulineY2, getBreedte(), hoogte / 300);
 
@@ -192,16 +240,14 @@ public class PanelRoute extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == menu){
+        if (e.getSource() == menu) {
             drawSquare = !drawSquare;
             repaint();
-        }
-        else if (e.getSource()==routeOpvragen) {
+        } else if (e.getSource() == routeOpvragen) {
 
 
-        }
-        else if (menuButtons.contains(e.getSource())) {
-            String buttonText = ((JButton)e.getSource()).getText();
+        } else if (menuButtons.contains(e.getSource())) {
+            String buttonText = ((JButton) e.getSource()).getText();
             if (buttonText.equals("Pakketten")) {
                 Popup p = new Popup(1, true, dbnaam);
                 p.setUsername(username);
@@ -214,23 +260,19 @@ public class PanelRoute extends JPanel implements ActionListener {
                 Popup p = new Popup(3, true, dbnaam);
                 p.setUsername(username);
                 p.setVisible(true);
-            }
-            else if (buttonText.equals("Registreren")) {
+            } else if (buttonText.equals("Registreren")) {
                 Popup p = new Popup(4, true, dbnaam);
                 p.setUsername(username);
                 p.setVisible(true);
-            }
-            else if (buttonText.equals("Route toewijzen")) {
+            } else if (buttonText.equals("Route toewijzen")) {
                 Popup p = new Popup(5, true, dbnaam);
                 p.setUsername(username);
                 p.setVisible(true);
-            }
-            else if (buttonText.equals("Bezorger status")) {
+            } else if (buttonText.equals("Bezorger status")) {
                 Popup p = new Popup(6, true, dbnaam);
                 p.setUsername(username);
                 p.setVisible(true);
-            }
-            else if (buttonText.equals("Uitloggen")) {
+            } else if (buttonText.equals("Uitloggen")) {
                 logOut(username);
                 dbconn.closeConnection();
                 System.out.println("Panel closed connection");

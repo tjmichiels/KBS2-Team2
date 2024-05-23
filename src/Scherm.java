@@ -8,7 +8,7 @@ import java.awt.event.WindowEvent;
 public class Scherm extends JFrame {
 //    JDBC.executeQuery(dbconn.getConn(),"");
     private int breedte = 800;
-    private int hoogte = 800;
+    private int hoogte = 1000;
     private String databaseurl;
     private boolean connectie;
     private JDBC dbconn;

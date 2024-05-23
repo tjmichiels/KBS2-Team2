@@ -29,37 +29,36 @@ public class Main {
 
 
         // IMPLEMENTATIE LIN KERNIGHAN
-        File folder = new File("data/");
-        File[] listOfFiles = folder.listFiles();
-        for (int i = 0; i < listOfFiles.length; i++) {
-            String name = listOfFiles[i].getName();
-            if (listOfFiles[i].isFile() && name.substring(name.length() - 3).equalsIgnoreCase("tsp")) {
-                System.out.println("  [" + i + "] " + listOfFiles[i].getName());
-            }
-        }
-        Scanner scanner = new Scanner(System.in);
-        int idx;
-        do {
-            System.out.print("Select the dataset to test: ");
-            idx = scanner.nextInt();
-        } while(idx >= listOfFiles.length || idx < 0);
-        // Read the file
-        Interpreter in = new Interpreter(listOfFiles[idx]);
-        // Create the instance of the problem
-        LinKernighan lk = new LinKernighan(in.getCoordinates(), in.getIds());
-        // Time keeping
-        long start;
-        start = System.currentTimeMillis();
-        // Shpw the results even if shutdown
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                System.out.printf("The solution took: %dms\n", System.currentTimeMillis()-start);
-                System.out.println("The solution is: ");
-                System.out.println(lk);
-            }
-        });
-        lk.runAlgorithm();
-
+//        File folder = new File("data/");
+//        File[] listOfFiles = folder.listFiles();
+//        for (int i = 0; i < listOfFiles.length; i++) {
+//            String name = listOfFiles[i].getName();
+//            if (listOfFiles[i].isFile() && name.substring(name.length() - 3).equalsIgnoreCase("tsp")) {
+//                System.out.println("  [" + i + "] " + listOfFiles[i].getName());
+//            }
+//        }
+//        Scanner scanner = new Scanner(System.in);
+//        int idx;
+//        do {
+//            System.out.print("Select the dataset to test: ");
+//            idx = scanner.nextInt();
+//        } while(idx >= listOfFiles.length || idx < 0);
+//        // Read the file
+//        Interpreter in = new Interpreter(listOfFiles[idx]);
+//        // Create the instance of the problem
+//        LinKernighan lk = new LinKernighan(in.getCoordinates(), in.getIds());
+//        // Time keeping
+//        long start;
+//        start = System.currentTimeMillis();
+//        // Shpw the results even if shutdown
+//        Runtime.getRuntime().addShutdownHook(new Thread() {
+//            public void run() {
+//                System.out.printf("The solution took: %dms\n", System.currentTimeMillis()-start);
+//                System.out.println("The solution is: ");
+//                System.out.println(lk);
+//            }
+//        });
+//        lk.runAlgorithm();
 
 //        System.out.println(lk.getDistance()); // totale afstand
 //        System.out.println(Arrays.toString(lk.tour)); // de int[] met de volgorde van de adressen
