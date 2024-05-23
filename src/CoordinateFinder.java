@@ -11,7 +11,7 @@ public class CoordinateFinder {
     private static final String API_URL = "https://api.postcodeapi.nu/v3/lookup/";
     private static final String API_KEY = "qVP6XG4nd16lDfdUNQA3zaaktUZ1o7AlKxrz3Kv6";
 
-    public JSONArray findCoordinates(String postcode, int number) {
+    public static JSONArray findCoordinates(String postcode, int number) {
 
         try {
             // Construct the full URL
