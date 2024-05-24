@@ -100,11 +100,11 @@ public class Tables {
                     "    ON DELETE NO ACTION\n" +
                     "    ON UPDATE NO ACTION\n" +
                     ");");
-//            JDBC.executeSQL(dbconn.getConn(), "ALTER TABLE `"+dbnaam+"`.`order`\n" +
-//                    "ADD COLUMN IF NOT EXISTS `date_received` DATETIME NULL,\n" +
-//                    "ADD COLUMN IF NOT EXISTS `date_delivered` DATETIME NULL,\n" +
-//                    "ADD COLUMN IF NOT EXISTS `delivered` VARCHAR(45) NOT NULL DEFAULT 'No',\n" +
-//                    "ADD COLUMN IF NOT EXISTS `klant_id` INT NOT NULL;\n");
+            JDBC.executeSQL(dbconn.getConn(), "ALTER TABLE `"+dbnaam+"`.`order`\n" +
+                    "ADD COLUMN IF NOT EXISTS `date_received` DATETIME NULL,\n" +
+                    "ADD COLUMN IF NOT EXISTS `date_delivered` DATETIME NULL,\n" +
+                    "ADD COLUMN IF NOT EXISTS `delivered` VARCHAR(45) NOT NULL DEFAULT 'No',\n" +
+                    "ADD COLUMN IF NOT EXISTS `klant_id` INT NOT NULL;\n");
 //            JDBC.executeSQL(dbconn.getConn(), "ALTER TABLE `"+dbnaam+"`.`order`\n" +
 //                    "ADD INDEX IF NOT EXISTS `klant_id_idx` (`klant_id` ASC),\n" +
 //                    "ADD CONSTRAINT IF NOT EXISTS `fk_klant_id`\n" +
