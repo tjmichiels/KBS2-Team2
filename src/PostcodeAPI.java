@@ -28,7 +28,7 @@ public class PostcodeAPI {
 
             // Get the response code
             int responseCode = connection.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
+            System.out.println("Response dCode: " + responseCode);
 
             // If the response code is 200 (HTTP.OK), read the response
             if (responseCode == HttpURLConnection.HTTP_OK) {

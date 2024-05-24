@@ -69,6 +69,8 @@ public class Main {
 
         // TEKENEN SCHERM
         Scherm s = new Scherm("routebepaling");
-        s.setListOfCoordinates(CreateFile.getListOfCoordinates(postcodesEnHuisnummers));
+
+        // Deze graag als commentaar laten want we hebben beperkte API calls
+//        s.setListOfCoordinates(CreateFile.getListOfCoordinates(postcodesEnHuisnummers));
     }
 }
