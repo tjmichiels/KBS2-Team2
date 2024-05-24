@@ -10,6 +10,7 @@ public class Tables {
         databaseurl = "jdbc:mysql://localhost:3306/" + dbnaam;
         createUser();
         registerUser("Amaldi", "123", "Manager");
+        registerUser("Bob", "123", "Bezorger");
         createKlant();
         createOrder();
         createOrderitem();

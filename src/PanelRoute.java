@@ -41,6 +41,8 @@ public class PanelRoute extends JPanel implements ActionListener {
     private String dbnaam;
     private String username;
     private String databaseurl;
+    private boolean manager;
+    private boolean routeVragen;
 
     private ArrayList<double[]> listOfCoordinates;
 
@@ -71,6 +73,7 @@ public class PanelRoute extends JPanel implements ActionListener {
     }
 
     public PanelRoute(String databasenaam) {
+        manager = false;
         databaseurl = "jdbc:mysql://localhost:3306/" + databasenaam;
         dbnaam = databasenaam;
         try {
@@ -90,7 +93,7 @@ public class PanelRoute extends JPanel implements ActionListener {
         routeOpvragen = new JButton("Route opvragen");
         routeOpvragen.addActionListener(this);
         add(routeOpvragen);
-        routeOpvragen.setBounds((getBreedte() / 2) - (getBreedte() / 8), menulineY2 + 10, getBreedte() / 4, getHoogte() / 20);
+        routeOpvragen.setBounds((getBreedte() / 2) - (getBreedte() / 8), menulineY2-200, getBreedte() / 4, getHoogte() / 20);
         addMenuButton("Pakketten");
         addMenuButton("Opmerking");
         addMenuButton("Bevestigen");
@@ -109,6 +112,7 @@ public class PanelRoute extends JPanel implements ActionListener {
     }
 
     public PanelRoute(String databasenaam, boolean manager) {
+        this.manager = true;
         String databaseurl = "jdbc:mysql://localhost:3306/" + databasenaam;
         dbnaam = databasenaam;
         try {
@@ -210,26 +214,30 @@ public class PanelRoute extends JPanel implements ActionListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        if(routeVragen){
+            g.setColor(Color.blue);
+            g.setFont(new Font("default", Font.BOLD, 12));
+            int size = 10;
+            // een paar standaard steden tekenen
+            // coördinaten afkomstig van: https://latitudelongitude.org/nl/
+            drawCity(g, "Utrecht", 52.09083, 5.12222, size);
+            drawCity(g, "Amsterdam", 52.37403, 4.88969, size);
+            drawCity(g, "Eindhoven", 51.44083, 5.47778, size);
+            drawCity(g, "Rotterdam", 51.9225, 4.47917, size);
+            drawCity(g, "Den Haag", 52.07667, 4.29861, size);
+            drawCity(g, "Groningen", 53.21917, 6.56667, size);
+            drawCity(g, "Born", 51.03167, 5.80972, size);
+            drawCity(g, "Middelburg", 51.5, 3.61389, size);
+            drawCity(g, "Alkmaar", 52.63167, 4.74861, size);
+            drawCity(g, "Zwolle", 52.5125, 6.09444, size);
+            drawCity(g, "Almere", 52.37025, 5.21413, size);
+            g.setColor(Color.black);
+            if (this.listOfCoordinates != null && !this.listOfCoordinates.isEmpty()) {
+                drawRoute(g);
+            }
+        }
 
 
-        g.setColor(Color.blue);
-        g.setFont(new Font("default", Font.BOLD, 12));
-        int size = 10;
-        // een paar standaard steden tekenen
-        // coördinaten afkomstig van: https://latitudelongitude.org/nl/
-        drawCity(g, "Utrecht", 52.09083, 5.12222, size);
-        drawCity(g, "Amsterdam", 52.37403, 4.88969, size);
-        drawCity(g, "Eindhoven", 51.44083, 5.47778, size);
-        drawCity(g, "Rotterdam", 51.9225, 4.47917, size);
-        drawCity(g, "Den Haag", 52.07667, 4.29861, size);
-        drawCity(g, "Groningen", 53.21917, 6.56667, size);
-        drawCity(g, "Born", 51.03167, 5.80972, size);
-        drawCity(g, "Middelburg", 51.5, 3.61389, size);
-        drawCity(g, "Alkmaar", 52.63167, 4.74861, size);
-        drawCity(g, "Zwolle", 52.5125, 6.09444, size);
-        drawCity(g, "Almere", 52.37025, 5.21413, size);
-
-        g.setColor(Color.black);
 
         g.drawOval((int) (getBreedte() * 0.9), (int) ((getHoogte() * 0.02) - 4), cirkelWH, cirkelWH);
         g.fillRect(0, menulineY, getBreedte(), hoogte / 300);
@@ -249,12 +257,29 @@ public class PanelRoute extends JPanel implements ActionListener {
             }
         }
         drawBezorgers(g);
-
+    }
+    private void routeTeken(Graphics g){
+        g.setColor(Color.blue);
+        g.setFont(new Font("default", Font.BOLD, 12));
+        int size = 10;
+        // een paar standaard steden tekenen
+        // coördinaten afkomstig van: https://latitudelongitude.org/nl/
+        drawCity(g, "Utrecht", 52.09083, 5.12222, size);
+        drawCity(g, "Amsterdam", 52.37403, 4.88969, size);
+        drawCity(g, "Eindhoven", 51.44083, 5.47778, size);
+        drawCity(g, "Rotterdam", 51.9225, 4.47917, size);
+        drawCity(g, "Den Haag", 52.07667, 4.29861, size);
+        drawCity(g, "Groningen", 53.21917, 6.56667, size);
+        drawCity(g, "Born", 51.03167, 5.80972, size);
+        drawCity(g, "Middelburg", 51.5, 3.61389, size);
+        drawCity(g, "Alkmaar", 52.63167, 4.74861, size);
+        drawCity(g, "Zwolle", 52.5125, 6.09444, size);
+        drawCity(g, "Almere", 52.37025, 5.21413, size);
+        g.setColor(Color.black);
         if (this.listOfCoordinates != null && !this.listOfCoordinates.isEmpty()) {
             drawRoute(g);
         }
     }
-
     private void drawRoute(Graphics g) {
         // IMPLEMENTATIE LIN KERNIGHAN
         File folder = new File("data/");
@@ -321,8 +346,9 @@ public class PanelRoute extends JPanel implements ActionListener {
             drawSquare = !drawSquare;
             repaint();
         } else if (e.getSource() == routeOpvragen) {
-
-
+            routeVragen = true;
+            repaint();
+            remove(routeOpvragen);
         } else if (menuButtons.contains(e.getSource())) {
             String buttonText = ((JButton) e.getSource()).getText();
             if (buttonText.equals("Pakketten")) {
