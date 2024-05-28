@@ -14,38 +14,26 @@ public class PostcodeAPI {
 
     public static JSONArray findCoordinates(String postcode, int number) {
         try {
-            // Construct the full URL
             URL url = new URL(API_URL + postcode + "/" + number);
-
-            // Open a connection to the URL
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            // Set the request method to GET
             connection.setRequestMethod("GET");
-
-            // Set the request header with the API key
             connection.setRequestProperty("X-Api-Key", API_KEY);
 
-            // Get the response code
             int responseCode = connection.getResponseCode();
             System.out.println("Response Code: " + responseCode);
 
-            // If the response code is 200 (HTTP.OK), read the response
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 String inputLine;
                 StringBuffer response = new StringBuffer();
 
-                // Read the response line by line
                 while ((inputLine = in.readLine()) != null) {
                     response.append(inputLine);
                 }
                 in.close();
 
-                // Parse the JSON response
                 JSONObject jsonResponse = new JSONObject(response.toString());
 
-                // Extract the coordinates
                 if (jsonResponse.has("location")) {
                     JSONObject location = jsonResponse.getJSONObject("location");
                     if (location.has("coordinates")) {
@@ -61,7 +49,6 @@ public class PostcodeAPI {
                     System.out.println("Location not found in the response.");
                 }
 
-                // Print the response
                 System.out.println("Response: " + response);
             } else {
                 System.out.println("GET request failed.");
@@ -75,35 +62,23 @@ public class PostcodeAPI {
     public static ArrayList<String> getAddressInfo(String postcode, int number) {
         ArrayList<String> list = new ArrayList<>();
         try {
-            // Construct the full URL
             URL url = new URL(API_URL + postcode + "/" + number);
-
-            // Open a connection to the URL
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            // Set the request method to GET
             connection.setRequestMethod("GET");
-
-            // Set the request header with the API key
             connection.setRequestProperty("X-Api-Key", API_KEY);
-
-            // Get the response code
             int responseCode = connection.getResponseCode();
             System.out.println("Response Code: " + responseCode);
 
-            // If the response code is 200 (HTTP.OK), read the response
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 String inputLine;
                 StringBuffer response = new StringBuffer();
 
-                // Read the response line by line
                 while ((inputLine = in.readLine()) != null) {
                     response.append(inputLine);
                 }
                 in.close();
 
-                // Parse the JSON response
                 JSONObject jsonResponse = new JSONObject(response.toString());
 
                 list.add(jsonResponse.getString("postcode"));
@@ -112,7 +87,6 @@ public class PostcodeAPI {
                 list.add(jsonResponse.getString("city"));
                 list.add(jsonResponse.getString("province"));
 
-                // Print the response
                 //System.out.println("Response: " + response);
             } else {
                 System.out.println("GET request failed.");
