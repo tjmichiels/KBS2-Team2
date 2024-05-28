@@ -99,7 +99,7 @@ public class Popup extends JDialog implements ActionListener {
                     setTitle("Pakketten");
 
                     int i = 0;
-                    while (rs.next() && i < 5) {
+                    while (rs.next() && i < aantalpakket) {
                         int order_id = rs.getInt("order_id");
                         String naam = rs.getString("naam");
                         String postcode = rs.getString("postcode");
