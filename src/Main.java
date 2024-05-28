@@ -71,6 +71,6 @@ public class Main {
         Scherm s = new Scherm("test");
 
         // Deze graag als commentaar laten want we hebben beperkte API calls
-//        s.setListOfCoordinates(CreateFile.getListOfCoordinates(postcodesEnHuisnummers));
+        //s.setListOfCoordinates(CreateFile.getListOfCoordinates(postcodesEnHuisnummers));
     }
 }
