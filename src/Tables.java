@@ -28,16 +28,17 @@ public class Tables {
             JDBC.executeSQL(dbconn.getConn(), "CREATE TABLE IF NOT EXISTS `"+dbnaam+"`.`klanten` (\n" +
                     "  `klant_id` INT NOT NULL AUTO_INCREMENT,\n" +
                     "  `naam` VARCHAR(45) NOT NULL,\n" +
-                    "  `postcode` VARCHAR(6) NOT NULL,\n" +
+                    "  `postcode` VARCHAR(10) NOT NULL,\n" +
                     "  `huisnummer` INT NOT NULL,\n" +
                     "  PRIMARY KEY (`klant_id`));");
             JDBC.executeSQL(dbconn.getConn(),
                     "ALTER TABLE `" + dbnaam + "`.`klanten` " +
                             "ADD COLUMN IF NOT EXISTS `klant_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
                             "ADD COLUMN IF NOT EXISTS `naam` VARCHAR(45) NOT NULL, " +
-                            "ADD COLUMN IF NOT EXISTS `postcode` VARCHAR(6) NOT NULL, " +
+                            "ADD COLUMN IF NOT EXISTS `postcode` VARCHAR(10) NOT NULL, " +
                             "ADD COLUMN IF NOT EXISTS `huisnummer` INT NOT NULL;"
             );
+
             System.out.println("klanten tabel gemaakt");
 
         } catch (SQLException e) {
@@ -106,6 +107,28 @@ public class Tables {
                     "ADD COLUMN IF NOT EXISTS `date_delivered` DATETIME NULL,\n" +
                     "ADD COLUMN IF NOT EXISTS `delivered` VARCHAR(45) NOT NULL DEFAULT 'No',\n" +
                     "ADD COLUMN IF NOT EXISTS `klant_id` INT NOT NULL;\n");
+//            JDBC.executeSQL(dbconn.getConn(), "INSERT INTO test.order (order_id, date_received, klant_id)\n" +
+//                    "VALUES\n" +
+//                    "    (1, '2024-05-05', 1),\n" +
+//                    "    (2, '2024-05-05', 2),\n" +
+//                    "    (3, '2024-05-05', 3),\n" +
+//                    "    (4, '2024-05-05', 4),\n" +
+//                    "    (5, '2024-05-05', 5),\n" +
+//                    "    (6, '2024-05-05', 6),\n" +
+//                    "    (7, '2024-05-05', 7),\n" +
+//                    "    (8, '2024-05-05', 8),\n" +
+//                    "    (9, '2024-05-05', 9),\n" +
+//                    "    (10, '2024-05-05', 10),\n" +
+//                    "    (11, '2024-05-05', 11),\n" +
+//                    "    (12, '2024-05-05', 12),\n" +
+//                    "    (13, '2024-05-05', 13),\n" +
+//                    "    (14, '2024-05-05', 14),\n" +
+//                    "    (15, '2024-05-05', 15),\n" +
+//                    "    (16, '2024-05-05', 16),\n" +
+//                    "    (17, '2024-05-05', 17),\n" +
+//                    "    (18, '2024-05-05', 18),\n" +
+//                    "    (19, '2024-05-05', 19),\n" +
+//                    "    (20, '2024-05-05', 20);");
 //            JDBC.executeSQL(dbconn.getConn(), "ALTER TABLE `"+dbnaam+"`.`order`\n" +
 //                    "ADD INDEX IF NOT EXISTS `klant_id_idx` (`klant_id` ASC),\n" +
 //                    "ADD CONSTRAINT IF NOT EXISTS `fk_klant_id`\n" +

@@ -6,6 +6,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class Popup extends JDialog implements ActionListener {
     private JButton confirm = new JButton("CONFIRM");
@@ -82,17 +83,43 @@ public class Popup extends JDialog implements ActionListener {
             add(confirm);
         }
         if(knop==1){
-            aantalpakket = 5;
-            setLayout(new GridLayout(aantalpakket+2, 2));
-            setTitle("Paketten");
-            for (int i = 0; i < aantalpakket; i++) {
-                JLabel pakketLabel = new JLabel("Pakket " + (i + 1));
-                add(pakketLabel);
+            if (knop == 1) {
+                setSize(800, 600);
+                try {
+                    JDBC dbconn = new JDBC(databaseurl, "root", "");
+                    String query = "SELECT order_id, naam, postcode, huisnummer FROM test.order JOIN klanten ON test.order.klant_id = klanten.klant_id";
+                    ResultSet rs = JDBC.executeSQL(dbconn.getConn(), query);
+                    String countQuery = "SELECT COUNT(order_id) AS order_count FROM test.order";
+                    ResultSet countResult = JDBC.executeSQL(dbconn.getConn(), countQuery);
+                    int aantalpakket = 0;
+                    if (countResult.next()) {
+                        aantalpakket = countResult.getInt("order_count");
+                    }
+                    setLayout(new GridLayout(aantalpakket + 2, 1));
+                    setTitle("Pakketten");
+
+                    int i = 0;
+                    while (rs.next() && i < aantalpakket) {
+                        int order_id = rs.getInt("order_id");
+                        String naam = rs.getString("naam");
+                        String postcode = rs.getString("postcode");
+                        int huisnr = rs.getInt("huisnummer");
+
+                        ArrayList<String> adresInfo = PostcodeAPI.getAddressInfo(postcode, huisnr);
+                        JLabel pakketLabel = new JLabel("Order ID: " + order_id + ", Naam: " + naam + ", Adres: "
+                        + adresInfo.get(2) +" "+ huisnr);
+                        add(pakketLabel);
+                        i++;
+                    }
+                    dbconn.closeConnection();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                add(error);
+                add(filler);
+                add(cancel);
+                add(confirm);
             }
-            add(error);
-            add(filler);
-            add(cancel);
-            add(confirm);
         }
         if(knop==4){
             setLayout(new GridLayout(5, 2));
@@ -177,6 +204,7 @@ public class Popup extends JDialog implements ActionListener {
         if(e.getSource()==confirm){
             if(knop==1){
                 //Pakketten
+
                 dispose();
             }
             if(knop==2){
@@ -226,6 +254,7 @@ public class Popup extends JDialog implements ActionListener {
                     } catch (SQLException ex) {
                         throw new RuntimeException(ex);
                     }
+                    getParent().repaint();
                     dispose();
                 } else {
                     error.setText("Please enter a valid order number.");
