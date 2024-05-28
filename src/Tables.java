@@ -38,7 +38,18 @@ public class Tables {
                             "ADD COLUMN IF NOT EXISTS `postcode` VARCHAR(10) NOT NULL, " +
                             "ADD COLUMN IF NOT EXISTS `huisnummer` INT NOT NULL;"
             );
-
+//            JDBC.executeSQL(dbconn.getConn(), "INSERT INTO klanten (klant_id, naam, postcode, huisnummer)\n" +
+//                    "VALUES\n" +
+//                    "    (1, 'Klaas de Vries', '7311KN', 1),\n" +
+//                    "    (2, 'Annie Jansen', '3841LA', 4),\n" +
+//                    "    (3, 'Pieter Bakker', '3784LN', 67),\n" +
+//                    "    (4, 'Marieke Visser', '3811LC', 40),\n" +
+//                    "    (5, 'Henk de Boer', '3712BD', 24),\n" +
+//                    "    (6, 'Carla van der Linden', '1211CN', 16),\n" +
+//                    "    (7, 'Jan van Dijk', '3621ZA', 1),\n" +
+//                    "    (8, 'Suzanne de Jong', '3621ZA', 1),\n" +
+//                    "    (9, 'Erik van den Berg', '3562KZ', 48),\n" +
+//                    "    (10, 'Lisa de Wit', '1363XB', 5);");
             System.out.println("klanten tabel gemaakt");
 
         } catch (SQLException e) {
@@ -118,17 +129,7 @@ public class Tables {
 //                    "    (7, '2024-05-05', 7),\n" +
 //                    "    (8, '2024-05-05', 8),\n" +
 //                    "    (9, '2024-05-05', 9),\n" +
-//                    "    (10, '2024-05-05', 10),\n" +
-//                    "    (11, '2024-05-05', 11),\n" +
-//                    "    (12, '2024-05-05', 12),\n" +
-//                    "    (13, '2024-05-05', 13),\n" +
-//                    "    (14, '2024-05-05', 14),\n" +
-//                    "    (15, '2024-05-05', 15),\n" +
-//                    "    (16, '2024-05-05', 16),\n" +
-//                    "    (17, '2024-05-05', 17),\n" +
-//                    "    (18, '2024-05-05', 18),\n" +
-//                    "    (19, '2024-05-05', 19),\n" +
-//                    "    (20, '2024-05-05', 20);");
+//                    "    (10, '2024-05-05', 10);");
 //            JDBC.executeSQL(dbconn.getConn(), "ALTER TABLE `"+dbnaam+"`.`order`\n" +
 //                    "ADD INDEX IF NOT EXISTS `klant_id_idx` (`klant_id` ASC),\n" +
 //                    "ADD CONSTRAINT IF NOT EXISTS `fk_klant_id`\n" +

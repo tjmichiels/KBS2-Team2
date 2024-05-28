@@ -95,7 +95,7 @@ public class Popup extends JDialog implements ActionListener {
                     if (countResult.next()) {
                         aantalpakket = countResult.getInt("order_count");
                     }
-                    setLayout(new GridLayout(aantalpakket + 2, 1));
+                    setLayout(new GridLayout(aantalpakket + 1, 2));
                     setTitle("Pakketten");
 
                     int i = 0;
